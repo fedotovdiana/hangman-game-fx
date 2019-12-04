@@ -14,7 +14,7 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Виселица");
         primaryStage.setScene(new Scene(pane, 1000.0, 600.0));
-        primaryStage.sizeToScene();
+//        primaryStage.sizeToScene();
         primaryStage.show();
     }
 
