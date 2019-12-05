@@ -1,5 +1,6 @@
 package game;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -7,7 +8,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,10 +19,12 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     private final static int ALF_LENGHT = 32;
-    private final int PORT = 8083;
+    private final int PORT = 2403;
     private String host = "localhost";
     private Socket socket;
-    private GameLogic gameLogic = new GameLogic();
+    private BufferedReader br;
+    private PrintWriter os;
+    private boolean state;
 
     @FXML
     BorderPane pane;
@@ -32,9 +38,12 @@ public class Controller implements Initializable {
         setupScreen();
     }
 
-    public void connect() {
+    private void connect() {
         try {
             socket = new Socket(host, PORT);
+            br = new BufferedReader((new InputStreamReader((socket.getInputStream()))));
+            os = new PrintWriter(socket.getOutputStream(), true);
+            state = Integer.parseInt(br.readLine()) == 1;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,9 +54,10 @@ public class Controller implements Initializable {
         Menu gameMenu = new Menu("Game");
         MenuItem openPlayMenuItem = new MenuItem("Play");
         openPlayMenuItem.setOnAction(event -> {
-            //  connect();
+            connect();
             setupMainPane();
             setupGuessedWordPane();
+            startGame();
         });
         MenuItem exitMenuItem = new MenuItem("Exit");
         exitMenuItem.setOnAction(event ->
@@ -72,7 +82,11 @@ public class Controller implements Initializable {
 
     private void setupGuessedWordPane() {
         StackPane guessedWordPane = new StackPane();
-        guessedWordLabel.setText(gameLogic.guessedWord);
+        try {
+            guessedWordLabel.setText(br.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         guessedWordPane.getChildren().addAll(guessedWordLabel);
         pane.setCenter(guessedWordPane);
     }
@@ -94,27 +108,71 @@ public class Controller implements Initializable {
         mainGrid.add(statusLabel, 0, 2);
     }
 
+
+    private Thread receiver = new Thread(() -> {
+        Boolean flag = true;
+        while (flag) {
+            try {
+                int isOver = Integer.parseInt(br.readLine());
+                switch (isOver) {
+                    case 0:
+                        Button btn = new Button();
+                        String letter = br.readLine();
+                        for (Button alphabetButton : alphabetButtons) {
+                            if (alphabetButton.getText().equals(letter)) {
+                                btn = alphabetButton;
+                            }
+                        }
+                        System.out.println("textFromBtn " + btn.getText());
+                        if (Integer.parseInt(br.readLine()) == 0) {
+                            btn.setStyle("-fx-background-color: #e62c2c;");
+                            state = !state;
+                        } else {
+                            btn.setStyle("-fx-background-color: #2f7e4d;");
+                        }
+                        String line = br.readLine();
+                        Platform.runLater(() ->
+                                guessedWordLabel.setText(line));
+                        break;
+                    case 1:
+                        if (Integer.parseInt(br.readLine()) == 0) {
+                            disableAlphaButtons();
+                            String text = "Вы проиграли! Загаданное слово: \"" + br.readLine() + "\"";
+                            Platform.runLater(() ->
+                                    statusLabel.setText(text));
+                        } else {
+                            String line1 = br.readLine();
+                            Platform.runLater(() ->
+                                    guessedWordLabel.setText(line1));
+                            disableAlphaButtons();
+                            String text = "Вы выиграли";
+                            Platform.runLater(() ->
+                                    statusLabel.setText(text));
+                        }
+                        flag = false;
+                        break;
+                }
+                if (state) disAlphaButtons();
+                else enableAlphaButtons();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+
+    private void startGame() {
+        if (state) disAlphaButtons();
+        receiver.start();
+    }
+
     private class AlphaButtonHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
             Button button = (Button) event.getSource();
             String input = button.getText();
-            if (gameLogic.nextStep(input)) {
-                button.setStyle("-fx-background-color: #2f7e4d;");
-                button.setDisable(true);
-                guessedWordLabel.setText(gameLogic.guessedWord);
-            } else {
-                button.setStyle("-fx-background-color: #e62c2c;");
-                button.setDisable(true);
-            }
-            if (gameLogic.missCount >= GameLogic.MAX_MISSES) {
-                disableAlphaButtons();
-                statusLabel.setText("Вы проиграли! Загаданное слово: \"" + gameLogic.keyWord + "\"");
-            }
-            if (gameLogic.isGuessed) {
-                disableAlphaButtons();
-                statusLabel.setText("Вы выиграли!");
-            }
+            os.println(input);
+            disAlphaButtons();
+            System.out.println("push " + input);
         }
     }
 
@@ -124,4 +182,21 @@ public class Controller implements Initializable {
             alphabetButtons[i].setDisable(true);
         }
     }
+
+    private void disAlphaButtons() {
+        for (int i = 0; i < ALF_LENGHT; i++) {
+            alphabetButtons[i].setDisable(true);
+        }
+    }
+
+    private void enableAlphaButtons() {
+        for (int i = 0; i < ALF_LENGHT; i++) {
+//            if (alphabetButtons[i])
+            alphabetButtons[i].setDisable(false);
+        }
+    }
 }
+
+//как проверить, есть ли стиль
+//комнаты
+//архитектура клиента и сервера

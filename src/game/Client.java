@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -14,7 +14,7 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Виселица");
         primaryStage.setScene(new Scene(pane, 1000.0, 600.0));
-//        primaryStage.sizeToScene();
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 
