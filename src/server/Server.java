@@ -12,7 +12,7 @@ public class Server {
     private final static int PORT = 2403;
     private Socket socket1;
     private Socket socket2;
-    private boolean state = false;
+    private boolean state = false; //false = ходит первый
     private GameLogic gameLogic = new GameLogic();
 
     public static void main(String[] args) {
@@ -38,8 +38,8 @@ public class Server {
             PrintWriter os1 = new PrintWriter(socket1.getOutputStream(), true);
             BufferedReader br2 = new BufferedReader((new InputStreamReader((socket2.getInputStream()))));
             PrintWriter os2 = new PrintWriter(socket2.getOutputStream(), true);
-            os1.println(0);
-            os2.println(1);
+            os1.println(0); //этот игрок ходит первым
+            os2.println(1); //этот игрок ходит вторым
             os1.println(gameLogic.guessedWord);
             os2.println(gameLogic.guessedWord);
             label:
@@ -59,7 +59,6 @@ public class Server {
     private boolean listen(BufferedReader br1, PrintWriter os1, PrintWriter os2) {
         try {
             String letter = br1.readLine();
-            System.out.println("получена " + letter);
             if (gameLogic.nextStep(letter)) {
                 if (gameLogic.isGuessed) {
                     //слово угадано
@@ -71,7 +70,6 @@ public class Server {
                     os2.println(gameLogic.keyWord);
                     return false;
                 } else {
-                    System.out.println("есть такая");
                     //обновитесь
                     os1.println(0);
                     os1.println(letter);
@@ -81,7 +79,6 @@ public class Server {
                     os2.println(letter);
                     os2.println(1); //есть такая буква
                     os2.println(gameLogic.guessedWord);
-                    System.out.println("есть такая");
                 }
             } else if (gameLogic.missCount >= GameLogic.MAX_MISSES) {
                 //попыток больше нет

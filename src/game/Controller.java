@@ -123,7 +123,6 @@ public class Controller implements Initializable {
                                 btn = alphabetButton;
                             }
                         }
-                        System.out.println("textFromBtn " + btn.getText());
                         if (Integer.parseInt(br.readLine()) == 0) {
                             btn.setStyle("-fx-background-color: #e62c2c;");
                             state = !state;
@@ -172,7 +171,6 @@ public class Controller implements Initializable {
             String input = button.getText();
             os.println(input);
             disAlphaButtons();
-            System.out.println("push " + input);
         }
     }
 
@@ -191,12 +189,7 @@ public class Controller implements Initializable {
 
     private void enableAlphaButtons() {
         for (int i = 0; i < ALF_LENGHT; i++) {
-//            if (alphabetButtons[i])
             alphabetButtons[i].setDisable(false);
         }
     }
 }
-
-//как проверить, есть ли стиль
-//комнаты
-//архитектура клиента и сервера
