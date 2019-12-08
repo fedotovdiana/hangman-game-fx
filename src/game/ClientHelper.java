@@ -8,29 +8,36 @@ import java.net.Socket;
 
 public class ClientHelper {
 
-    private BufferedReader br;
-    private PrintWriter os;
+    private final int PORT = 2403;
+    private String host = "localhost";
+    public Socket socket;
+    public BufferedReader br;
+    public PrintWriter os;
+    public boolean state;
 
-    public ClientHelper(Socket socket) {
+
+    public void connect() {
         try {
+            socket = new Socket(host, PORT);
             br = new BufferedReader((new InputStreamReader((socket.getInputStream()))));
             os = new PrintWriter(socket.getOutputStream(), true);
+            state = Integer.parseInt(br.readLine()) == 1;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendMsg(String letter) {
-        os.println(letter);
-    }
-
-    public String getMsg() {
-        String letter = "";
+    public String recieve() {
+        String input = null;
         try {
-            letter = br.readLine();
+            input = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return letter;
+        return input;
+    }
+
+    public void send(String output) {
+        os.println(output);
     }
 }

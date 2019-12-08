@@ -25,12 +25,10 @@ public class GameLogic {
     }
 
     public boolean nextStep(String input) {
-        System.out.println("ключевое слово " + keyWord);
         if (keyWord.contains(input)) {
             changeGuessedWord(input);
             if (!guessedWord.contains("-")) {
                 isGuessed = true;
-                System.out.println("isGuessed " + isGuessed);
             }
             return true;
         } else {

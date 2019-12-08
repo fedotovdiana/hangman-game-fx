@@ -8,23 +8,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
     private final static int ALF_LENGHT = 32;
-    private final int PORT = 2403;
-    private String host = "localhost";
-    private Socket socket;
-    private BufferedReader br;
-    private PrintWriter os;
-    private boolean state;
+    private ClientHelper clientHelper;
 
     @FXML
     BorderPane pane;
@@ -35,18 +25,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        clientHelper = new ClientHelper();
         setupScreen();
-    }
-
-    private void connect() {
-        try {
-            socket = new Socket(host, PORT);
-            br = new BufferedReader((new InputStreamReader((socket.getInputStream()))));
-            os = new PrintWriter(socket.getOutputStream(), true);
-            state = Integer.parseInt(br.readLine()) == 1;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setupScreen() {
@@ -54,7 +34,7 @@ public class Controller implements Initializable {
         Menu gameMenu = new Menu("Game");
         MenuItem openPlayMenuItem = new MenuItem("Play");
         openPlayMenuItem.setOnAction(event -> {
-            connect();
+            clientHelper.connect();
             setupMainPane();
             setupGuessedWordPane();
             startGame();
@@ -82,11 +62,7 @@ public class Controller implements Initializable {
 
     private void setupGuessedWordPane() {
         StackPane guessedWordPane = new StackPane();
-        try {
-            guessedWordLabel.setText(br.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        guessedWordLabel.setText(clientHelper.recieve());
         guessedWordPane.getChildren().addAll(guessedWordLabel);
         pane.setCenter(guessedWordPane);
     }
@@ -108,59 +84,8 @@ public class Controller implements Initializable {
         mainGrid.add(statusLabel, 0, 2);
     }
 
-
-    private Thread receiver = new Thread(() -> {
-        Boolean flag = true;
-        while (flag) {
-            try {
-                int isOver = Integer.parseInt(br.readLine());
-                switch (isOver) {
-                    case 0:
-                        Button btn = new Button();
-                        String letter = br.readLine();
-                        for (Button alphabetButton : alphabetButtons) {
-                            if (alphabetButton.getText().equals(letter)) {
-                                btn = alphabetButton;
-                            }
-                        }
-                        if (Integer.parseInt(br.readLine()) == 0) {
-                            btn.setStyle("-fx-background-color: #e62c2c;");
-                            state = !state;
-                        } else {
-                            btn.setStyle("-fx-background-color: #2f7e4d;");
-                        }
-                        String line = br.readLine();
-                        Platform.runLater(() ->
-                                guessedWordLabel.setText(line));
-                        break;
-                    case 1:
-                        if (Integer.parseInt(br.readLine()) == 0) {
-                            disableAlphaButtons();
-                            String text = "Вы проиграли! Загаданное слово: \"" + br.readLine() + "\"";
-                            Platform.runLater(() ->
-                                    statusLabel.setText(text));
-                        } else {
-                            String line1 = br.readLine();
-                            Platform.runLater(() ->
-                                    guessedWordLabel.setText(line1));
-                            disableAlphaButtons();
-                            String text = "Вы выиграли";
-                            Platform.runLater(() ->
-                                    statusLabel.setText(text));
-                        }
-                        flag = false;
-                        break;
-                }
-                if (state) disAlphaButtons();
-                else enableAlphaButtons();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    });
-
     private void startGame() {
-        if (state) disAlphaButtons();
+        if (clientHelper.state) disAlphaButtons();
         receiver.start();
     }
 
@@ -169,7 +94,7 @@ public class Controller implements Initializable {
         public void handle(ActionEvent event) {
             Button button = (Button) event.getSource();
             String input = button.getText();
-            os.println(input);
+            clientHelper.send(input);
             disAlphaButtons();
         }
     }
@@ -192,4 +117,51 @@ public class Controller implements Initializable {
             alphabetButtons[i].setDisable(false);
         }
     }
+
+    private Thread receiver = new Thread(() -> {
+        Boolean flag = true;
+        while (flag) {
+            int isOver = Integer.parseInt(clientHelper.recieve());
+            switch (isOver) {
+                case 0:
+                    Button btn = new Button();
+                    String letter = clientHelper.recieve();
+                    for (Button alphabetButton : alphabetButtons) {
+                        if (alphabetButton.getText().equals(letter)) {
+                            btn = alphabetButton;
+                        }
+                    }
+                    if (Integer.parseInt(clientHelper.recieve()) == 0) {
+                        btn.setStyle("-fx-background-color: #e62c2c;");
+                        clientHelper.state = !clientHelper.state;
+                    } else {
+                        btn.setStyle("-fx-background-color: #2f7e4d;");
+                    }
+                    String line = clientHelper.recieve();
+                    Platform.runLater(() ->
+                            guessedWordLabel.setText(line));
+                    break;
+                case 1:
+                    if (Integer.parseInt(clientHelper.recieve()) == 0) {
+                        disableAlphaButtons();
+                        String text = "Вы проиграли! Загаданное слово: \"" + clientHelper.recieve() + "\"";
+                        Platform.runLater(() ->
+                                statusLabel.setText(text));
+                    } else {
+                        String line1 = clientHelper.recieve();
+                        Platform.runLater(() ->
+                                guessedWordLabel.setText(line1));
+                        disableAlphaButtons();
+                        String text = "Вы выиграли";
+                        Platform.runLater(() ->
+                                statusLabel.setText(text));
+                    }
+                    flag = false;
+                    break;
+            }
+            if (clientHelper.state) disAlphaButtons();
+            else enableAlphaButtons();
+
+        }
+    });
 }
