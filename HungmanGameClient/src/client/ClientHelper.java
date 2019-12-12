@@ -27,7 +27,7 @@ public class ClientHelper {
         }
     }
 
-    public String recieve() {
+    public String receive() {
         String input = null;
         try {
             input = br.readLine();

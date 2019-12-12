@@ -31,7 +31,7 @@ public class Server {
         }
     }
 
-    private class Room implements Runnable {
+    public class Room implements Runnable {
         Socket socket1;
         Socket socket2;
         boolean state = false; //false = ходит первый
@@ -67,7 +67,7 @@ public class Server {
             }
         }
 
-        private boolean listen(BufferedReader br1, PrintWriter os1, PrintWriter os2) {
+        public boolean listen(BufferedReader br1, PrintWriter os1, PrintWriter os2) {
             try {
                 String letter = br1.readLine();
                 if (gameLogic.nextStep(letter)) {
@@ -97,7 +97,7 @@ public class Server {
                     os1.println(0); //проиграл
                     os1.println(gameLogic.keyWord);
                     os2.println(1);
-                    os2.println(1); //выиграл
+                    os2.println(0); //тоже проиграл
                     os2.println(gameLogic.keyWord);
                     return false;
                 } else {
@@ -112,7 +112,8 @@ public class Server {
                     os2.println(gameLogic.guessedWord);
                     state = !state;
                 }
-                System.out.println("конец метода");
+                os1.println(gameLogic.missCount);
+                os2.println(gameLogic.missCount);
             } catch (IOException e) {
                 e.printStackTrace();
             }

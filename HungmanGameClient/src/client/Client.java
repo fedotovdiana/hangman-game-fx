@@ -10,10 +10,10 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        BorderPane pane = FXMLLoader.load(getClass().getResource("game.fxml"));
+        BorderPane pane = FXMLLoader.load(getClass().getResource("../fxml/menu.fxml"));
         primaryStage.setResizable(false);
         primaryStage.setTitle("Виселица");
-        primaryStage.setScene(new Scene(pane, 1000.0, 600.0));
+        primaryStage.setScene(new Scene(pane, 1000.0, 550.0));
         primaryStage.sizeToScene();
         primaryStage.show();
     }
