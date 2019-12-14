@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -31,7 +32,7 @@ public class GameController implements Initializable {
             btn_13, btn_14, btn_15, btn_16, btn_17, btn_18,
             btn_19, btn_20, btn_21, btn_22, btn_23, btn_24,
             btn_25, btn_26, btn_27, btn_28, btn_29, btn_30,
-            btn_31, btn_32;
+            btn_31, btn_32, btn_close;
     @FXML
     private Label label_state;
     @FXML
@@ -64,8 +65,8 @@ public class GameController implements Initializable {
     }
 
     private Thread receiver = new Thread(() -> {
-        Boolean flag = true;
-        while (flag) {
+        label:
+        while (true) {
             int isOver = Integer.parseInt(clientHelper.receive());
             switch (isOver) {
                 case 0:
@@ -101,7 +102,7 @@ public class GameController implements Initializable {
                         String text = "Вы проиграли! Загаданное слово: \"" + clientHelper.receive() + "\"";
                         Platform.runLater(() -> {
                             label_answer.setText(text);
-                            Image im = new Image("img/10.png");
+                            Image im = new Image("/img/10.png");
                             image_game.setImage(im);
                         });
                     } else {
@@ -111,22 +112,21 @@ public class GameController implements Initializable {
                         disableAlphaButtons();
                         String text = "Поздравляем, Вы выиграли!";
                         Platform.runLater(() -> {
-                            Image img = new Image("img/11.png");
+                            Image img = new Image("/img/11.png");
                             image_game.setImage(img);
                             label_answer.setText(text);
                         });
                     }
-                    flag = false;
-                    break;
+                    break label;
             }
             String missCount = clientHelper.receive();
             Platform.runLater(() -> {
-                Image im = new Image("img/" + missCount + ".png");
+                Image im = new Image("/img/" + missCount + ".png");
                 image_game.setImage(im);
             });
             if (clientHelper.state) {
                 disAlphaButtons();
-            } else if (flag) {
+            } else {
                 enableAlphaButtons();
                 Platform.runLater(() ->
                         label_state.setText("Ваш ход. Выберете букву"));
@@ -250,5 +250,11 @@ public class GameController implements Initializable {
         st.setToX(1);
         st.setToY(1);
         st.play();
+    }
+
+    @FXML
+    public void onClose() {
+        Stage stage = (Stage) btn_close.getScene().getWindow();
+        stage.close();
     }
 }

@@ -6,10 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
 
     private final static int PORT = 2403;
+    private Map<Socket, Socket> sockets;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -17,14 +20,20 @@ public class Server {
     }
 
     private void startServer() {
+        sockets = new HashMap<>();
         ServerSocket ss = null;
         try {
-            ss = new ServerSocket(PORT);
-            while (true) {
-                Socket socket1 = ss.accept();
-                Socket socket2 = ss.accept();
-                Thread thread = new Thread(new Room(socket1, socket2));
-                thread.start();
+            try {
+                ss = new ServerSocket(PORT);
+                while (true) {
+                    Socket socket1 = ss.accept();
+                    Socket socket2 = ss.accept();
+                    sockets.put(socket1, socket2);
+                    Thread thread = new Thread(new Room(socket1, socket2));
+                    thread.start();
+                }
+            } finally {
+                ss.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,18 +58,28 @@ public class Server {
                 PrintWriter os1 = new PrintWriter(socket1.getOutputStream(), true);
                 BufferedReader br2 = new BufferedReader((new InputStreamReader((socket2.getInputStream()))));
                 PrintWriter os2 = new PrintWriter(socket2.getOutputStream(), true);
-                os1.println(0); //этот игрок ходит первым
-                os2.println(1); //этот игрок ходит вторым
-                os1.println(gameLogic.guessedWord);
-                os2.println(gameLogic.guessedWord);
-                label:
-                while (!gameLogic.isGuessed) {
-                    while (!state) {
-                        if (!listen(br1, os1, os2)) break label;
+                try {
+                    os1.println(0); //этот игрок ходит первым
+                    os2.println(1); //этот игрок ходит вторым
+                    os1.println(gameLogic.guessedWord);
+                    os2.println(gameLogic.guessedWord);
+                    label:
+                    while (!gameLogic.isGuessed) {
+                        while (!state) {
+                            if (!listen(br1, os1, os2)) break label;
+                        }
+                        while (state) {
+                            if (!listen(br2, os2, os1)) break label;
+                        }
                     }
-                    while (state) {
-                        if (!listen(br2, os2, os1)) break label;
-                    }
+                } finally {
+                    socket1.close();
+                    socket2.close();
+                    br1.close();
+                    os1.close();
+                    br2.close();
+                    os2.close();
+                    sockets.remove(socket1, socket2);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
