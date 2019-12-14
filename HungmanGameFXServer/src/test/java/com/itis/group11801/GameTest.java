@@ -26,18 +26,18 @@ public class GameTest {
     }
 
     @Test
+    public void nextStepTest() {
+        gameLogic.keyWord = "итис";
+        gameLogic.guessedWord = "-т-с";
+        Assert.assertTrue(gameLogic.nextStep("и"));
+    }
+
+    @Test
     public void changeGuessedWordTest() {
         gameLogic.keyWord = "любовь";
         gameLogic.guessedWord = "------";
         gameLogic.changeGuessedWord("л");
         Assert.assertEquals(gameLogic.guessedWord, "л-----");
-    }
-
-    @Test
-    public void nextStepTest() {
-        gameLogic.keyWord = "итис";
-        gameLogic.guessedWord = "-т-с";
-        Assert.assertTrue(gameLogic.nextStep("и"));
     }
 
     @Test
@@ -55,5 +55,4 @@ public class GameTest {
         gameLogic.guessedWord = "д----я";
         Assert.assertFalse(gameLogic.nextStep("м"));
     }
-
 }
