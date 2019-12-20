@@ -6,37 +6,33 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Server {
 
     private final static int PORT = 2403;
-    private Map<Socket, Socket> sockets;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Server server = new Server();
         server.startServer();
     }
 
-    private void startServer() {
-        sockets = new HashMap<>();
-        ServerSocket ss = null;
+    private void startServer() throws IOException {
+        ServerSocket ss = new ServerSocket(PORT);
         try {
-            try {
-                ss = new ServerSocket(PORT);
-                while (true) {
-                    Socket socket1 = ss.accept();
-                    Socket socket2 = ss.accept();
-                    sockets.put(socket1, socket2);
-                    Thread thread = new Thread(new Room(socket1, socket2));
-                    thread.start();
-                }
-            } finally {
-                ss.close();
+            while (true) {
+                Socket socket1 = ss.accept();
+                Socket socket2 = ss.accept();
+                Thread thread = new Thread(new Room(socket1, socket2));
+                thread.start();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                ss.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -73,69 +69,68 @@ public class Server {
                         }
                     }
                 } finally {
-                    socket1.close();
-                    socket2.close();
-                    br1.close();
-                    os1.close();
-                    br2.close();
-                    os2.close();
-                    sockets.remove(socket1, socket2);
+                    try {
+                        br1.close();
+                        os1.close();
+                        br2.close();
+                        os2.close();
+                        socket1.close();
+                        socket2.close();
+                    } catch (IOException e) {
+                        System.out.println("DISCONNECTED");
+                    }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        public boolean listen(BufferedReader br1, PrintWriter os1, PrintWriter os2) {
-            try {
-                String letter = br1.readLine();
-                if (gameLogic.nextStep(letter)) {
-                    if (gameLogic.isGuessed) {
-                        //слово угадано
-                        os1.println(1);
-                        os1.println(1); //выиграл
-                        os1.println(gameLogic.keyWord);
-                        os2.println(1);
-                        os2.println(0); //проиграл
-                        os2.println(gameLogic.keyWord);
-                        return false;
-                    } else {
-                        //обновитесь
-                        os1.println(0);
-                        os1.println(letter);
-                        os1.println(1); //есть такая буква
-                        os1.println(gameLogic.guessedWord);
-                        os2.println(0);
-                        os2.println(letter);
-                        os2.println(1); //есть такая буква
-                        os2.println(gameLogic.guessedWord);
-                    }
-                } else if (gameLogic.missCount >= GameLogic.MAX_MISSES) {
-                    //попыток больше нет
+        public boolean listen(BufferedReader br1, PrintWriter os1, PrintWriter os2) throws IOException {
+            String letter = br1.readLine();
+            if (gameLogic.nextStep(letter)) {
+                if (gameLogic.isGuessed) {
+                    //слово угадано
                     os1.println(1);
-                    os1.println(0); //проиграл
+                    os1.println(1); //выиграл
                     os1.println(gameLogic.keyWord);
                     os2.println(1);
-                    os2.println(0); //тоже проиграл
+                    os2.println(0); //проиграл
                     os2.println(gameLogic.keyWord);
                     return false;
                 } else {
                     //обновитесь
                     os1.println(0);
                     os1.println(letter);
-                    os1.println(0); //нет такой буквы
+                    os1.println(1); //есть такая буква
                     os1.println(gameLogic.guessedWord);
                     os2.println(0);
                     os2.println(letter);
-                    os2.println(0); //нет такой буквы
+                    os2.println(1); //есть такая буква
                     os2.println(gameLogic.guessedWord);
-                    state = !state;
                 }
-                os1.println(gameLogic.missCount);
-                os2.println(gameLogic.missCount);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else if (gameLogic.missCount >= GameLogic.MAX_MISSES) {
+                //попыток больше нет
+                os1.println(1);
+                os1.println(0); //проиграл
+                os1.println(gameLogic.keyWord);
+                os2.println(1);
+                os2.println(0); //тоже проиграл
+                os2.println(gameLogic.keyWord);
+                return false;
+            } else {
+                //обновитесь
+                os1.println(0);
+                os1.println(letter);
+                os1.println(0); //нет такой буквы
+                os1.println(gameLogic.guessedWord);
+                os2.println(0);
+                os2.println(letter);
+                os2.println(0); //нет такой буквы
+                os2.println(gameLogic.guessedWord);
+                state = !state;
             }
+            os1.println(gameLogic.missCount);
+            os2.println(gameLogic.missCount);
             return true;
         }
     }

@@ -14,19 +14,14 @@ public class ClientHelper {
     public PrintWriter os;
     public boolean state;
 
-    public ClientHelper() {
-    }
-
-
     public void connect() {
         try {
-//            Scanner sc = new Scanner(System.in);
-//            System.out.println("Введите хост");
-//            String host = sc.nextLine();
-//            System.out.println("Введите порт");
-//            int port = sc.nextInt();
-//            socket = new Socket(host, port);
-            socket = new Socket("localhost", 2403);
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Введите хост");
+            String host = sc.nextLine();
+            System.out.println("Введите порт");
+            int port = sc.nextInt();
+            socket = new Socket(host, port);
             br = new BufferedReader((new InputStreamReader((socket.getInputStream()))));
             os = new PrintWriter(socket.getOutputStream(), true);
             state = Integer.parseInt(br.readLine()) == 1;
@@ -47,5 +42,15 @@ public class ClientHelper {
 
     public void send(String output) {
         os.println(output);
+    }
+
+    public void disconnect() {
+        try {
+            br.close();
+            os.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,31 +7,42 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="pane" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itis.group11801.MenuController">
+<BorderPane fx:id="pane" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itis.group11801.MenuController">
     <left>
-        <Pane prefHeight="550.0" prefWidth="0.0" style="-fx-background-color: EACA57;" BorderPane.alignment="CENTER" />
+        <Pane prefHeight="550.0" prefWidth="0.0" style="-fx-background-color: EACA57;" BorderPane.alignment="CENTER"/>
     </left>
     <right>
-        <Pane fx:id="pane_right" prefHeight="550.0" prefWidth="265.0" style="-fx-background-color: #4D5061;" BorderPane.alignment="CENTER">
+        <Pane fx:id="pane_right" prefHeight="550.0" prefWidth="265.0" style="-fx-background-color: #4D5061;"
+              BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="btn_rules" layoutX="78.0" layoutY="90.0" mnemonicParsing="false" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="47.0" prefWidth="110.0" style="-fx-background-color: C0A648;" text="Правила" textFill="#4d5061">
+                <Button fx:id="btn_rules" layoutX="78.0" layoutY="90.0" mnemonicParsing="false"
+                        onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="47.0"
+                        prefWidth="110.0" style="-fx-background-color: C0A648;" text="Правила" textFill="#4d5061">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="19.0" />
+                        <Font name="Comic Sans MS Bold" size="19.0"/>
                     </font>
                 </Button>
-                <Button fx:id="btn_exit" layoutX="78.0" layoutY="418.0" mnemonicParsing="false" onAction="#onClickExit" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="47.0" prefWidth="110.0" style="-fx-background-color: C0A648;" text="Выход" textFill="#4d5061">
+                <Button fx:id="btn_exit" layoutX="78.0" layoutY="418.0" mnemonicParsing="false" onAction="#onClickExit"
+                        onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="47.0"
+                        prefWidth="110.0" style="-fx-background-color: C0A648;" text="Выход" textFill="#4d5061">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="24.0" />
+                        <Font name="Comic Sans MS Bold" size="24.0"/>
                     </font>
                 </Button>
-                <Button fx:id="btn_play" layoutX="58.0" layoutY="245.0" mnemonicParsing="false" onAction="#onClickPlay" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="61.0" prefWidth="149.0" style="-fx-background-color: F4CE42;" text="Играть" textFill="#4d5061">
+                <Button fx:id="btn_play" layoutX="58.0" layoutY="245.0" mnemonicParsing="false" onAction="#onClickPlay"
+                        onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="61.0"
+                        prefWidth="149.0" style="-fx-background-color: F4CE42;" text="Играть" textFill="#4d5061">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="30.0" />
+                        <Font name="Comic Sans MS Bold" size="30.0"/>
                     </font>
                 </Button>
-                <Button fx:id="btn_back" layoutX="67.0" layoutY="445.0" mnemonicParsing="false" onAction="#onClickPlay" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="49.0" prefWidth="131.0" style="-fx-background-color: F4CE42;" text="Назад" textFill="#4d5061" visible="false">
+                <Button fx:id="btn_back" layoutX="67.0" layoutY="445.0" mnemonicParsing="false" onAction="#onClickPlay"
+                        onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="49.0"
+                        prefWidth="131.0" style="-fx-background-color: F4CE42;" text="Назад" textFill="#4d5061"
+                        visible="false">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="27.0" />
+                        <Font name="Comic Sans MS Bold" size="27.0"/>
                     </font>
                 </Button>
             </children>
@@ -40,23 +51,28 @@
     <center>
         <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: EACA57;" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="110.0" layoutY="341.0" onMouseEntered="#onEntered" onMouseExited="#onExited" prefHeight="139.0" prefWidth="514.0" text="Виселица" textAlignment="CENTER" textFill="#4d5061" textOverrun="CENTER_WORD_ELLIPSIS">
+                <Label fx:id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="110.0" layoutY="341.0"
+                       onMouseEntered="#onEntered" onMouseExited="#onExited" prefHeight="139.0" prefWidth="514.0"
+                       text="Виселица" textAlignment="CENTER" textFill="#4d5061" textOverrun="CENTER_WORD_ELLIPSIS">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="86.0" />
+                        <Font name="Comic Sans MS Bold" size="86.0"/>
                     </font>
                     <effect>
-                        <Glow />
+                        <Glow/>
                     </effect>
                     <opaqueInsets>
-                        <Insets />
+                        <Insets/>
                     </opaqueInsets>
                 </Label>
-                <ImageView fx:id="image_menu" fitHeight="365.0" fitWidth="397.0" layoutX="130.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../img/v.png" />
+                <ImageView fx:id="image_menu" fitHeight="365.0" fitWidth="397.0" layoutX="130.0" layoutY="-4.0"
+                           pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../img/v.png"/>
                 </ImageView>
-                <Label fx:id="label_rules" alignment="CENTER" contentDisplay="CENTER" layoutX="91.0" layoutY="39.0" prefHeight="486.0" prefWidth="553.0" text="Один из игроков загадывает слово — пишет на бумаге первую и последнюю букву слова и отмечает места для остальных букв, например чертами (существует также вариант, когда изначально все буквы слова неизвестны). Также рисуется виселица с петлёй.  Согласно традиции русских лингвистических игр слово должно быть именем существительным нарицательным в именительном падеже единственного числа, либо множественного числа при отсутствии у слова формы единственного числа." textAlignment="CENTER" textFill="#4d5061" textOverrun="CLIP" visible="false" wrapText="true">
+                <Label fx:id="label_rules" alignment="CENTER" contentDisplay="CENTER" layoutX="91.0" layoutY="39.0"
+                       prefHeight="486.0" prefWidth="553.0" text="Задаётся слово. Два игрока по очереди пытаются угадать его буквы. Если игрок угадал букву, он ходит еще раз. Если игроки допускают 10 ошибок,
+они проигрывают. Выигрывает игрок, который угадал последнюю букву в слове." textAlignment="CENTER" textFill="#4d5061" textOverrun="CLIP" visible="false" wrapText="true">
                     <font>
-                        <Font name="Comic Sans MS Bold" size="23.0" />
+                        <Font name="Comic Sans MS Bold" size="23.0"/>
                     </font>
                 </Label>
             </children>

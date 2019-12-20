@@ -32,7 +32,7 @@ public class GameController implements Initializable {
             btn_13, btn_14, btn_15, btn_16, btn_17, btn_18,
             btn_19, btn_20, btn_21, btn_22, btn_23, btn_24,
             btn_25, btn_26, btn_27, btn_28, btn_29, btn_30,
-            btn_31, btn_32, btn_close;
+            btn_31, btn_32;
     @FXML
     private Label label_state;
     @FXML
@@ -47,13 +47,13 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        clientHelper = new ClientHelper();
         startGame();
     }
 
     private void startGame() {
-        clientHelper.connect();
         setupAlfButtons();
+        clientHelper = new ClientHelper();
+        clientHelper.connect();
         label_guessed.setText(clientHelper.receive());
         if (clientHelper.state) {
             label_state.setText("Ход противника");
@@ -117,6 +117,7 @@ public class GameController implements Initializable {
                             label_answer.setText(text);
                         });
                     }
+                    clientHelper.disconnect();
                     break label;
             }
             String missCount = clientHelper.receive();
@@ -250,11 +251,5 @@ public class GameController implements Initializable {
         st.setToX(1);
         st.setToY(1);
         st.play();
-    }
-
-    @FXML
-    public void onClose() {
-        Stage stage = (Stage) btn_close.getScene().getWindow();
-        stage.close();
     }
 }
